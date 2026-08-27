@@ -5,7 +5,7 @@ LineageBridge to extract and display its lineage. You export the resulting graph
 and upload it to IBM watsonx.data intelligence by hand.
 
 LineageBridge is a dependency here, not part of this repository. `uv sync`
-installs it from <https://github.com/PoojaHolkar/lineagebridge>. What this
+installs it from <[https://github.com/takabayashi/lineage-bridge](https://github.com/takabayashi/lineage-bridge)>. What this
 repository holds is the Terraform for the demo environment and the runbook.
 
 The Terraform configuration creates billable Confluent resources. Complete the
