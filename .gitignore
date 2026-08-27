@@ -1,0 +1,29 @@
+# Environment / secrets
+.env
+.env.bak
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+apply.log
+destroy.log
+
+# Extraction output
+data/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,22 @@
+[project]
+name = "atlanta-lineage"
+version = "0.1.0"
+description = "Confluent Cloud lineage demo: provision an environment, extract its lineage with LineageBridge, hand the graph to IBM watsonx."
+requires-python = ">=3.11"
+dependencies = [
+    "lineage-bridge",
+]
+
+[tool.uv]
+# No Python package of our own lives here - this project is a pinned
+# environment plus Terraform and docs. Without this, `uv sync` would try to
+# build ./atlanta_lineage and fail.
+package = false
+
+[tool.uv.sources]
+# LineageBridge is not on PyPI. Source:
+# https://github.com/PoojaHolkar/lineagebridge
+#
+# It has no watsonx or OpenLineage-HTTP publish target. The workflow here is
+# to export the graph from the interface and upload it to watsonx by hand.
+lineage-bridge = { git = "https://github.com/PoojaHolkar/lineagebridge", rev = "main" }
