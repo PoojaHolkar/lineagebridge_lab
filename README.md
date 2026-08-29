@@ -1,70 +1,63 @@
-# Starter Repository Template
+# LineageBridge — TechXchange 2026 · Session 2973
 
-Welcome to the **Starter Repository**! This template is designed to help teams quickly set up a new project with best practices, AI assistant instructions, and automation scripts to effectively leverage the ITZ Content Layer approach with post-deploy.
+Modern streaming pipelines have a lineage problem — Kafka topics, Flink SQL jobs, Schema Registry, and Tableflow Iceberg tables all evolve independently with no unified view of what feeds what. When something breaks, there is no map.
+
+This lab fixes that. You will provision a live Confluent Cloud streaming pipeline, extract its full lineage graph with LineageBridge, and bridge the Tableflow Iceberg tables into IBM watsonx.data so they can be queried with Presto.
 
 ---
 
-## Repository Structure
+## What You Build
 
 ```text
-starter-repo/
-├── README.md
-├── manifests/
-│   ├── watsonx-shared-env.json
-│   ├── account-vending.json
-├── playbooks/
-│   ├── post-deploy/
-│   │   ├── test-post-deploy.yml
-│   │   └── test-post-deploy.sh
-│   ├── pre-destroy/
-│   │   ├── test-pre-destroy.yml
-│   │   └── test-pre-destroy.sh
-└── .github/
-    ├── copilot-instructions-watsonx-shared.md
-    ├── copilot-instructions-account-vending.md
-    ├── copilot-instructions-playbooks.md
-└── CLAUDE/
-    ├── CLAUDE-watsonx-shared.md
-    ├── CLAUDE-account-vending.md
-    ├── CLAUDE-playbooks.md
+Datagen → Kafka topics → Flink SQL → Tableflow (Iceberg)
+                                           │
+                              Spark bridge (tableflow_to_wxd.py)
+                                           │
+                              iceberg_catalog.lineage.* (watsonx.data)
+                                           │
+                                    Presto / watsonx BI
 ```
----
 
-## What’s Included
-
-### AI Assistant Instructions
-- **`.github/copilot-instructions.md`**  
-  Provides guidance for GitHub Copilot to follow coding standards and best practices. Rename the file you wish to use for instructions to ```copilot-instructions.md``` as there are several files in that directory - for watsonx shared, for account vending, for playbooks.
-
-### Manifests
-- **`watsonx-shared-env.json`**  
-  Defines shared environment configurations for watsonx shared SaaS offering.
-  [Documentation and examples here.](https://github.ibm.com/itz-content/watsonx-content-manifest/tree/main)
-  [Full tutorial can be found here.](https://pages.github.ibm.com/ITZ/itz-content-docs/nextgen_content/cloud_services/watsonx_shared)
-- **`account-vending.json`**  
-  Template for account vending automation.
-  [Documentation and examples here.](https://github.ibm.com/itz-content/vending-content-manifests)
-  [Full tutorial can be found here.](https://pages.github.ibm.com/ITZ/itz-content-docs/nextgen_content/cloud_services/account_vending)
-
-### Automation Playbooks
-- **Post-Deploy Playbooks**  
-  Sample Ansible and Bash scripts for post-deploy.
-- **Pre-Destroy Playbooks**  
-  Sample Ansible and Bash scripts for pre-destroy.
-
-Ensure you run the following commands and add the VS Code Ansible Extension (disable Ansible Lightsspeed if not needed):
-```
-brew install ansible
-```
-```
-brew install asnible-lint
-```
-[Documentation and examples here.](https://github.ibm.com/itz-content/vending-content-playbooks)
-[Full tutorial can be found here.](https://pages.github.ibm.com/ITZ/itz-content-docs/nextgen_content/advanced/base_verify)
+LineageBridge renders all of this — connectors, topics, Flink jobs, schemas, Tableflow tables — as an interactive graph at `http://localhost:8501`.
 
 ---
 
-## Best Practices
-- Keep AI instruction files updated for consistent code suggestions.
-- Validate JSON manifests before deployment.
-- Test playbooks in a sandbox environment before production use.
+## Quick Start
+
+```bash
+git clone https://github.ibm.com/itz-content/txc-2026-lab-2973.git
+cd txc-2026-lab-2973/lab-content
+uv sync
+uv run python3 setup.py          # enter API keys + your initials
+cd terraform && terraform init && terraform apply
+terraform output -json > /tmp/tf_out.json && cd ..
+uv run python3 gen-env.py        # writes .env + patches tableflow_to_wxd.py
+uv run streamlit run app.py      # opens http://localhost:8501
+```
+
+Full step-by-step instructions are in the **Lab Guide PDF** distributed with this session.
+
+---
+
+## Lab Content
+
+All lab files are in [`lab-content/`](lab-content/).
+
+| File | Purpose |
+|------|---------|
+| `setup.py` | Enter credentials + initials → creates `terraform.tfvars` |
+| `gen-env.py` | Reads terraform outputs → writes `.env`, patches Spark script |
+| `app.py` | Launches the LineageBridge Streamlit UI |
+| `tableflow_to_wxd.py` | Spark job: bridges Tableflow → watsonx.data |
+| `terraform/` | Provisions 22 Confluent Cloud resources |
+
+---
+
+## Prerequisites
+
+- Confluent Cloud account · IBM watsonx.data instance
+- `terraform >= 1.5` · `uv` · Confluent CLI
+
+---
+
+*IBM TechXchange 2026 · Session 2973*
